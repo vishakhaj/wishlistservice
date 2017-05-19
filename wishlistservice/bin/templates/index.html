@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+<link
+	href="http://cdn.jsdelivr.net/webjars/bootstrap/3.3.4/css/bootstrap.min.css"
+	th:href="@{/webjars/bootstrap/3.3.4/css/bootstrap.min.css}"
+	rel="stylesheet" media="screen" />
+
+<title>Wishlists</title>
+</head>
+
+<body>
+	<h2>Wishlists</h2>
+	<span th:each="wishlist : ${listOfWishlists}"> <span
+		th:text="'Wishlist id: ' + ${wishlist.wishlistId}"></span><br/> <span
+		th:text="'Wishlist name: ' + ${wishlist.name}"></span><br/><span
+		th:text="'Wishlist description: ' + ${wishlist.description}"></span><br/><br/>
+	</span>
+</body>
+</html>
+
+
