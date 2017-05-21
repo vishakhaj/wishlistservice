@@ -22,17 +22,19 @@ public class WishlistController {
 	
 	@RequestMapping(method = RequestMethod.GET)
 	public ModelAndView getAllWishlists() {
-		ModelAndView mav = new ModelAndView("/index");
+		ModelAndView mav = new ModelAndView("index");
 		mav.addObject("listOfWishlists", wishlistService.getAllWishlists());
 		return mav;
 	}
 
-	@RequestMapping(method = RequestMethod.POST)
-	public Wishlist createWishlist(@Valid @RequestBody Wishlist wishlist) {
-		return wishlistService.createWishlist(wishlist);
+	@RequestMapping(value="", method = RequestMethod.POST)
+	public void createWishlist(@Valid @RequestBody Wishlist wishlist) {
+		 wishlistService.createWishlist(wishlist);
+		 System.out.println("Wishlist saved..");
+		 
 	}
 
-	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public void deleteWishlist(@PathVariable("id") String id) {
 		wishlistService.deleteWishlist(id);
 	}

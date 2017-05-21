@@ -9,7 +9,7 @@ public class Wishlist {
 
 	@Id
 	private String wishlistId;
-
+	
 	private String name;
 
 	private String description;

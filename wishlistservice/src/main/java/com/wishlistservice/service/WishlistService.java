@@ -27,12 +27,12 @@ public class WishlistService {
 		return mapper.createWishlists(wishlists);
 	}
 
-	public Wishlist createWishlist(Wishlist wishlist) {
-		return wishlistRepository.save(wishlist);
+	public void createWishlist(Wishlist wishlist) {
+		wishlistRepository.createWishlist(wishlist);
 	}
 
 	public void deleteWishlist(String id) {
-		wishlistRepository.delete(id);
+		wishlistRepository.deleteWishlist(id);
 	}
 
 }

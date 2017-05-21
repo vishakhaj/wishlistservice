@@ -15,10 +15,10 @@ public enum Clients {
 	private String shortName;
 
 	private Locale[] locales;
-
+	
 	static {
 		for (Clients client : values()) {
-			Client clientInfo = new Client(client.name(), client.shortName, client.locales);
+			Client clientInfo = new Client(client.name(), client.shortName);
 			clientsByName.put(client.shortName, clientInfo);
 			clientsByAbbr.put(client.name(), clientInfo);
 		}
@@ -26,10 +26,6 @@ public enum Clients {
 	
 	public static Client clientByShortName(String shortName) {
 		return clientsByName.get(shortName);
-	}
-
-	public static Client clientByAbbreviation(String abbr) {
-		return clientsByAbbr.get(abbr);
 	}
 
 	private Clients(String shortString, Locale... locales) {

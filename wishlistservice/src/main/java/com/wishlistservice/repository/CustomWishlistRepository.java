@@ -11,5 +11,9 @@ public interface CustomWishlistRepository {
 	public void getAllWishlists();
 	
 	public List<Wishlist> findAllWishlists(Client client, Locale locale);
+	
+	public void createWishlist(Wishlist wishlist);
+	
+	public void deleteWishlist(String id);
 
 }

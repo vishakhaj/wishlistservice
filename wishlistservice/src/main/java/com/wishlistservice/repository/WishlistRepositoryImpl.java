@@ -10,6 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
 import com.google.common.cache.Cache;
@@ -70,6 +72,19 @@ public class WishlistRepositoryImpl implements CustomWishlistRepository {
 	public List<Wishlist> findAllWishlists(Client client, Locale locale) {
 		Map<Locale, List<Wishlist>> mapByClient = cache.getIfPresent(client);
 		return mapByClient == null ? null : mapByClient.get(locale);
+	}
+
+	@Override
+	public void createWishlist(Wishlist wishlist) {
+		mongoTemplate.save(wishlist);
+	}
+
+	@Override
+	public void deleteWishlist(String id) {
+		Query query = new Query();
+		Criteria criteria = Criteria.where("_id").is(id);
+		query.addCriteria(criteria);
+		mongoTemplate.findAndRemove(query, Wishlist.class);
 	}
 
 }
