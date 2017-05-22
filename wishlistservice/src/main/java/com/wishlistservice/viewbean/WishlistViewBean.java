@@ -8,6 +8,9 @@ public class WishlistViewBean {
 
 	private String description;
 
+	public WishlistViewBean() {
+	}
+
 	public WishlistViewBean(String wishlistId, String name, String description) {
 		this.wishlistId = wishlistId;
 		this.name = name;
@@ -24,6 +27,18 @@ public class WishlistViewBean {
 
 	public String getDescription() {
 		return description;
+	}
+
+	public void setWishlistId(String wishlistId) {
+		this.wishlistId = wishlistId;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	@Override

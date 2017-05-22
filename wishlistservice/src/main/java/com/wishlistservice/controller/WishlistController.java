@@ -23,6 +23,7 @@ public class WishlistController {
 	@RequestMapping(method = RequestMethod.GET)
 	public ModelAndView getAllWishlists() {
 		ModelAndView mav = new ModelAndView("index");
+		wishlistService.getAllWishlistsFromCache();
 		mav.addObject("listOfWishlists", wishlistService.getAllWishlists());
 		return mav;
 	}

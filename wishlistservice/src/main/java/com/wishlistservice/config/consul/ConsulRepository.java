@@ -4,6 +4,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,13 +33,13 @@ public class ConsulRepository {
 	@Autowired
 	private RestTemplateConfig restTemplateConfig;
 
-	public ConsulConfigItem requestConsulValue(String path) {
+	public Optional<ConsulConfigItem> requestConsulValue(String path) {
 		String consulAddress = CONSUL_ADDRESS + URL_SEPARATOR + KEY_VALUE_PATH + URL_SEPARATOR + path;
 		try {
 			ConsulConfigItem consulItem = restTemplateConfig.restTemplate().getForObject(consulAddress,
 					ConsulConfigItem.class);
 			if (consulItem != null) {
-				return consulItem;
+				return Optional.of(consulItem);
 			}
 		} catch (ResourceAccessException ex) {
 			logger.trace("Error occured when requesting Consul value: ", ex);
@@ -48,17 +49,17 @@ public class ConsulRepository {
 			logger.trace("Error occured when requesting Consul value: ", ex);
 			logger.error("An error occured during retreiving of key/values out of Consul.", ex.getMessage());
 		}
-		return null;
+		return Optional.empty();
 	}
 
-	public List<ConsulConfigItem> requestConsulValuesRecursively(String path) {
+	public Optional<List<ConsulConfigItem>> requestConsulValuesRecursively(String path) {
 		String consulAddress = CONSUL_ADDRESS + URL_SEPARATOR + KEY_VALUE_PATH + URL_SEPARATOR + path
 				+ RECURSE_PARAMETER;
 		try {
 			ConsulConfigItem[] consulItemList = restTemplateConfig.restTemplate().getForObject(consulAddress,
 					ConsulConfigItem[].class);
 			if (consulItemList != null) {
-				return Arrays.asList(consulItemList);
+				return Optional.of(Arrays.asList(consulItemList));
 			}
 		} catch (ResourceAccessException ex) {
 			logger.trace("Error occured when requesting Consul values: ", ex);
@@ -69,7 +70,7 @@ public class ConsulRepository {
 			logger.error("A RestClientException occured during retreiving of key/values out of Consul.",
 					ex.getMessage());
 		}
-		return null;
+		return Optional.empty();
 	}
 
 	public String decodedConsulValue(String key, String encodedValue) {

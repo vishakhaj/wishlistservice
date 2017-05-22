@@ -25,7 +25,7 @@ public class WishlistRepositoryImpl implements CustomWishlistRepository {
 
 	@Autowired
 	private MongoTemplate mongoTemplate;
-
+	
 	private static final Logger logger = LoggerFactory.getLogger(WishlistRepositoryImpl.class);
 
 	private Cache<Client, Map<Locale, List<Wishlist>>> cache;
@@ -34,13 +34,13 @@ public class WishlistRepositoryImpl implements CustomWishlistRepository {
 		cache = CacheBuilder.newBuilder().build();
 	}
 
-	public void getAllWishlists() {
-		Map<Client, Map<Locale, List<Wishlist>>> createAllWishlists = createAllWishlists();
+	public void cacheAllWishlists() {
+		Map<Client, Map<Locale, List<Wishlist>>> fetchAllWishlists = fetchAllWishlists();
 		cache.invalidateAll();
-		cache.putAll(createAllWishlists);
+		cache.putAll(fetchAllWishlists);
 	}
 
-	private Map<Client, Map<Locale, List<Wishlist>>> createAllWishlists() {
+	private Map<Client, Map<Locale, List<Wishlist>>> fetchAllWishlists() {
 		Map<Client, Map<Locale, List<Wishlist>>> mapByClient = new HashMap<>();
 		try {
 			List<Wishlist> wishlists = mongoTemplate.findAll(Wishlist.class);
@@ -78,7 +78,8 @@ public class WishlistRepositoryImpl implements CustomWishlistRepository {
 	public void createWishlist(Wishlist wishlist) {
 		mongoTemplate.save(wishlist);
 	}
-
+	
+	
 	@Override
 	public void deleteWishlist(String id) {
 		Query query = new Query();

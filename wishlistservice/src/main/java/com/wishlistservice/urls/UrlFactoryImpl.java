@@ -3,6 +3,7 @@ package com.wishlistservice.urls;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -20,9 +21,9 @@ public class UrlFactoryImpl implements UrlFactory{
 	
 	@Override
 	public URI createProducts() throws URISyntaxException {
-		List<ConsulConfigItem> consulItemList = consulRepository.requestConsulValuesRecursively(CONSUL_PRODUCT_KEY);
+		Optional<List<ConsulConfigItem>> consulItemList = consulRepository.requestConsulValuesRecursively(CONSUL_PRODUCT_KEY);
 			
-		for(ConsulConfigItem item : consulItemList){
+		for(ConsulConfigItem item : consulItemList.get()){
 			String decodedConsulValue = consulRepository.decodedConsulValue(item.getKey(), item.getValue());
 			return new URI(decodedConsulValue);
 		}

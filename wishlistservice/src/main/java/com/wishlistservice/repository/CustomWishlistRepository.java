@@ -8,7 +8,7 @@ import com.wishlistservice.domain.Wishlist;
 
 public interface CustomWishlistRepository {
 
-	public void getAllWishlists();
+	public void cacheAllWishlists();
 	
 	public List<Wishlist> findAllWishlists(Client client, Locale locale);
 	
