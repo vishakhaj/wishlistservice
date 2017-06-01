@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,16 +22,16 @@ import com.wishlistservice.common.Clients;
 import com.wishlistservice.domain.Wishlist;
 
 @Repository
-public class WishlistRepositoryImpl implements CustomWishlistRepository {
+public class CustomWishlistRepositoryImpl implements CustomWishlistRepository {
 
 	@Autowired
 	private MongoTemplate mongoTemplate;
 	
-	private static final Logger logger = LoggerFactory.getLogger(WishlistRepositoryImpl.class);
+	private static final Logger logger = LoggerFactory.getLogger(CustomWishlistRepositoryImpl.class);
 
 	private Cache<Client, Map<Locale, List<Wishlist>>> cache;
 
-	public WishlistRepositoryImpl() {
+	public CustomWishlistRepositoryImpl() {
 		cache = CacheBuilder.newBuilder().build();
 	}
 
@@ -40,7 +41,7 @@ public class WishlistRepositoryImpl implements CustomWishlistRepository {
 		cache.putAll(fetchAllWishlists);
 	}
 
-	private Map<Client, Map<Locale, List<Wishlist>>> fetchAllWishlists() {
+	public Map<Client, Map<Locale, List<Wishlist>>> fetchAllWishlists() {
 		Map<Client, Map<Locale, List<Wishlist>>> mapByClient = new HashMap<>();
 		try {
 			List<Wishlist> wishlists = mongoTemplate.findAll(Wishlist.class);
@@ -67,19 +68,31 @@ public class WishlistRepositoryImpl implements CustomWishlistRepository {
 		}
 		return mapByClient;
 	}
-
+	
+	//Find all wishlists by Client and Locale
 	@Override
-	public List<Wishlist> findAllWishlists(Client client, Locale locale) {
+	public Optional<List<Wishlist>> findAllWishlistsByClientAndLocale(Client client, Locale locale) {
+		List<Wishlist> listOfWishlistsByLocale = new ArrayList<>();
+		
 		Map<Locale, List<Wishlist>> mapByClient = cache.getIfPresent(client);
-		return mapByClient == null ? null : mapByClient.get(locale);
+		if(mapByClient== null){
+			return Optional.of(new ArrayList<Wishlist>());
+		}
+		listOfWishlistsByLocale = mapByClient.get(locale); 
+		if(listOfWishlistsByLocale == null){
+			logger.debug("No locale found in cache");
+			return Optional.empty();
+		}
+		return Optional.of(listOfWishlistsByLocale);		
 	}
 
+	//Create a wishlist
 	@Override
 	public void createWishlist(Wishlist wishlist) {
 		mongoTemplate.save(wishlist);
 	}
 	
-	
+	//Delete a wishlist
 	@Override
 	public void deleteWishlist(String id) {
 		Query query = new Query();

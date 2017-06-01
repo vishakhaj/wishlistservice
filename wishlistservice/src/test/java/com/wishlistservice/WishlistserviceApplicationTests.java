@@ -1,4 +1,4 @@
-package com.wishlistservice.wishlistservice;
+package com.wishlistservice;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

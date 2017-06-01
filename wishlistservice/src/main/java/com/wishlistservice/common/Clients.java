@@ -16,6 +16,8 @@ public enum Clients {
 
 	private Locale[] locales;
 	
+	private Client client;
+	
 	static {
 		for (Clients client : values()) {
 			Client clientInfo = new Client(client.name(), client.shortName);
@@ -40,5 +42,18 @@ public enum Clients {
 	public Locale[] getLocales() {
 		return locales;
 	}
+
+	public static Map<String, Client> getClientsByName() {
+		return clientsByName;
+	}
+
+	public static Map<String, Client> getClientsByAbbr() {
+		return clientsByAbbr;
+	}
+
+	public Client getClient() {
+		return client;
+	}
+	
 
 }

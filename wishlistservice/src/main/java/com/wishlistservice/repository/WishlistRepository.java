@@ -4,6 +4,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 import com.wishlistservice.domain.Wishlist;
 
-public interface WishlistRepository extends MongoRepository<Wishlist, String>, CustomWishlistRepository {
+public interface WishlistRepository extends MongoRepository<Wishlist, String> {
 
 }

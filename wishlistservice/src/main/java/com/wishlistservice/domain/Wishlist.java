@@ -3,13 +3,12 @@ package com.wishlistservice.domain;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-
 @Document
 public class Wishlist {
 
 	@Id
 	private String wishlistId;
-	
+
 	private String name;
 
 	private String description;

@@ -1,4 +1,4 @@
-package com.wishlistservice.wishlistservice;
+package com.wishlistservice;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -6,7 +6,6 @@ import static org.junit.Assert.assertNotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -24,13 +23,16 @@ public class WishlistUIMapperTest {
 	
 	
 	@Test
-	public void createUIViewBean_WishlistsNotFound_NullReturned() {
-		
-		List<WishlistViewBean> viewBean = classUnderTest.createUIViewBean(null);
-		Assert.assertNull(viewBean);
+	public void createUIViewBean_WishlistsNotFound_EmtpyListReturned() {
+		List<WishlistViewBean> viewBean = classUnderTest.createUIViewBean(emptyWishlist());
+		assertEquals(0, viewBean.size());
 		
 	}
 	
+	private List<Wishlist> emptyWishlist() {
+		return new ArrayList<Wishlist>();
+	}
+
 	@Test
 	public void createUIViewBean_WishlistsFound_ViewBeanReturned(){
 		classUnderTest.createUIViewBean(wishlists());
