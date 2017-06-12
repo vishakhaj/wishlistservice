@@ -1,0 +1,25 @@
+version: '2'
+services:
+  wishlistservice:
+    image: vishakhaj/wishlistservice:5.0
+    stdin_open: true
+    tty: true
+    links:
+    - mongodb:mongo
+    labels:
+      io.rancher.container.pull_image: always
+  loadbalancer:
+    image: rancher/lb-service-haproxy:v0.6.4
+    ports:
+    - 8888:8888/tcp
+    labels:
+      io.rancher.container.agent.role: environmentAdmin
+      io.rancher.container.create_agent: 'true'
+  mongodb:
+    image: mongo:3.0.4
+    ports:
+    - 27017:27017/tcp
+    stdin_open: true
+    tty: true
+    labels:
+      io.rancher.container.pull_image: always

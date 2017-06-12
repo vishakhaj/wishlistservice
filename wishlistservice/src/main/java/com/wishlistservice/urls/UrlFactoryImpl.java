@@ -16,6 +16,8 @@ public class UrlFactoryImpl implements UrlFactory{
 
 	private static final String CONSUL_PRODUCT_KEY = "wishlistservice/urls/products";
 	
+	private static final String CONSUL_USER_PATH = "wishlistservice/urls/users";
+	
 	@Autowired
 	private ConsulRepository consulRepository;
 	
@@ -28,6 +30,17 @@ public class UrlFactoryImpl implements UrlFactory{
 			return new URI(decodedConsulValue);
 		}
 		return null;	
+	}
+
+	@Override
+	public URI createUserUrl() throws URISyntaxException {
+		Optional<List<ConsulConfigItem>> consulItemList = consulRepository.requestConsulValuesRecursively(CONSUL_USER_PATH);
+		
+		for(ConsulConfigItem item : consulItemList.get()){
+			String decodedConsulValue = consulRepository.decodedConsulValue(item.getKey(), item.getValue());
+			return new URI(decodedConsulValue);
+		}
+		return null;
 	}
 
 }

@@ -1,0 +1,19 @@
+version: '2'
+services:
+ mongodb:
+   image: mongo:3.0.4
+   ports: 
+    - "27017:27017"
+   command: mongod -smallfiles
+ wishlistservice:
+   image: vishakhaj/wishlistservice:latest
+   links:
+    - mongodb
+ loadbalancer:
+  image: rancher/lb-service-haproxy:v0.6.4
+  ports:
+   - "8888:8888"
+
+   
+
+

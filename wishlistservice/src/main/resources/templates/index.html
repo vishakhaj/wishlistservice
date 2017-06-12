@@ -2,19 +2,37 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
-<title>Wishlists</title>
+<title>Wish-lists</title>
 </head>
 
 <body>
-	<h2>Wishlists</h2>
+	<h2>Wish-lists</h2>
 	<div th:if="${listOfWishlists}">
-		<span th:each="wishlist : ${listOfWishlists}"> <span
-		th:text="'Wishlist id: ' + ${wishlist.wishlistId}"></span><br/> <span
-		th:text="'Wishlist name: ' + ${wishlist.name}"></span><br/><span
-		th:text="'Wishlist description: ' + ${wishlist.description}"></span><br/><br/>
-	</span>
+		<span th:each="wishlist : ${listOfWishlists}"> 
+			<span th:text="'Id: ' + ${wishlist.wishlistId}"></span>
+			<span th:text="'Name: ' + ${wishlist.name}"></span>
+			<span th:text="'Description: ' + ${wishlist.description}"></span>
+			<span th:text="'Created at: ' + ${wishlist.createdAt}"></span>
+			<span th:text="'Client: ' + ${wishlist.client}"></span>
+			<span th:text="'Source: ' + ${wishlist.source}"></span>
+			<span th:text="'Type: ' + ${wishlist.type}"></span>
+			<span th:text="'Privacy: ' + ${wishlist.privacy}"></span>
+			<span th:text="'Modified On: ' + ${wishlist.modifiedOn}"></span>
+			<span th:text="'User id: ' + ${wishlist.userId}"></span>
+		</span>
 	</div>
 	
+	<div th:if="${wishlistById}">
+			<span th:text="'Id: ' + ${wishlistById.wishlistId}"></span>
+			<span th:text="'Name: ' + ${wishlistById.name}"></span>
+			<span th:text="'Description: ' + ${wishlistById.description}"></span>
+			<span th:text="'Created at: ' + ${wishlistById.createdAt}"></span>
+			<span th:text="'Client: ' + ${wishlistById.client}"></span>
+			<span th:text="'Source: ' + ${wishlistById.source}"></span>
+			<span th:text="'Type: ' + ${wishlistById.type}"></span>
+			<span th:text="'Modified On: ' + ${wishlistById.modifiedOn}"></span>
+			<span th:text="'User id: ' + ${wishlistById.userId}"></span>
+	</div>
 </body>
 </html>
 

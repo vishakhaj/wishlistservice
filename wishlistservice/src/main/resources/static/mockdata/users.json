@@ -1,0 +1,18 @@
+[{
+	"userId": "1",
+	"emailAddress": "vishakhaj.18@gmail.com",
+	"nickname": "vish",
+	"userType": "REGISTERED"
+},
+{
+	"userId": "2",
+	"emailAddress": "divyesh92@gmail.com",
+	"nickname": "div",
+	"userType": "REGISTERED"
+},
+{
+	"userId": "3",
+	"emailAddress": "bhrushi93@gmail.com",
+	"nickname": "blu",
+	"userType": "GUEST"
+}]

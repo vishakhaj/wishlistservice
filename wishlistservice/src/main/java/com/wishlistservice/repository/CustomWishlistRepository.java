@@ -1,19 +1,39 @@
 package com.wishlistservice.repository;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
-import com.wishlistservice.common.Client;
+import com.mongodb.WriteResult;
 import com.wishlistservice.domain.Wishlist;
 
 public interface CustomWishlistRepository {
 
 	public void cacheAllWishlists();
+
+	public Optional<List<Wishlist>> findAllWishlistsByUserId(String userId);
+
+	public void createWishlistByUserId(String client, String locale, String userId, Wishlist wishlist);
+
+	public Optional<WriteResult> updateWishlistByUserIdAndWishlistId(String userId, String wishlistId, Wishlist wishlist);
+
+	public void deleteWishlistByUserIdAndWishlistId(String userId, String wishlistId);
 	
-	public Optional<List<Wishlist>> findAllWishlistsByClientAndLocale(Client client, Locale locale);
+	public Wishlist findWishlistByUserIdAndWishlistId(String wishlistId);
 	
-	public void createWishlist(Wishlist wishlist);
+	public List<Wishlist> findAllPublicWishlists();
 	
-	public void deleteWishlist(String id);
+	public List<Wishlist> findAllWishlistsByUserIdAndSource(String userId, String source);
+	
+	public List<Wishlist> findAllWishlistsByUserIdAndPrivacy(String userId, String privacy);
+	
+	public List<Wishlist> findAllWishlistsByUserIdAndType(String userId, String type);
+	
+	public List<Wishlist> findAllWishlistsByUserIdAndSourceAndPrivacyAndType(String userId, String source, String privacy, String type);
+
+	public List<Wishlist> findAllWishlistsByUserIdAndSourceAndPrivacy(String userId, String source, String privacy);
+	
+	public List<Wishlist> findAllWishlistsByUserIdAndSourceAndType(String userId, String source, String type);
+	
+	public List<Wishlist> findAllWishlistsByUserIdAndPrivacyAndType(String userId, String privacy, String type);
+
 }
