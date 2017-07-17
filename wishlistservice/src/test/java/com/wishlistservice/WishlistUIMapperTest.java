@@ -12,6 +12,9 @@
 //import org.mockito.InjectMocks;
 //import org.mockito.runners.MockitoJUnitRunner;
 //
+//import com.wishlistservice.common.Privacy;
+//import com.wishlistservice.common.Source;
+//import com.wishlistservice.common.Type;
 //import com.wishlistservice.domain.Wishlist;
 //import com.wishlistservice.mapper.WishlistUIMapper;
 //import com.wishlistservice.viewbean.WishlistViewBean;
@@ -24,19 +27,8 @@
 //	
 //	
 //	@Test
-//	public void createUIViewBean_WishlistsNotFound_EmtpyListReturned() {
-//		List<WishlistViewBean> viewBean = classUnderTest.createUIViewBean(emptyWishlist());
-//		assertEquals(0, viewBean.size());
-//		
-//	}
-//	
-//	private List<Wishlist> emptyWishlist() {
-//		return new ArrayList<Wishlist>();
-//	}
-//
-//	@Test
-//	public void createUIViewBean_WishlistsFound_ViewBeanReturned(){
-//		classUnderTest.createUIViewBean(wishlists());
+//	public void createUIViewBean_WishlistsFound_ReturnViewBean(){
+//		classUnderTest.createUIViewBeanList(wishlists());
 //		WishlistViewBean viewBean = new WishlistViewBean();
 //		
 //		for(Wishlist wishlist : wishlists()){
@@ -48,11 +40,23 @@
 //		assertEquals("wishlist a", viewBean.getName() );
 //		assertEquals("description a", viewBean.getDescription());
 //	}
+//	
+//	@Test
+//	public void createUIViewBean_WishlistFound_ReturnViewBean(){
+//		WishlistViewBean wishlist = classUnderTest.createUIViewBean(wishlist());
+//		assertNotNull(wishlist);
+//		assertEquals("wishlist a", wishlist.getName());
+//	}
+//
+//	private Wishlist wishlist() {
+//		Wishlist wishlist = new Wishlist("wishlist a", "description a", "MediaDE", "de", new Date(), Source.ONLINE, Type.DEFAULT, Privacy.PUBLIC, new Date(), "1" );
+//		return wishlist;
+//	}
 //
 //	private List<Wishlist> wishlists() {
 //		List<Wishlist> list = new ArrayList<>();
-//		Wishlist wishlist1 = new Wishlist("wishlist a", "description a", "MediaDE", "de", new Date());
-//		list.add(wishlist1);
+//		Wishlist wishlist = new Wishlist("wishlist a", "description a", "MediaDE", "de", new Date(), Source.ONLINE, Type.DEFAULT, Privacy.PUBLIC, new Date(), "1" );
+//		list.add(wishlist);
 //		return list;
 //	}
 //}

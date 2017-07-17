@@ -1,39 +1,48 @@
 package com.wishlistservice.repository;
 
+import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import com.mongodb.WriteResult;
+import com.wishlistservice.domain.Item;
 import com.wishlistservice.domain.Wishlist;
 
 public interface CustomWishlistRepository {
 
+	//@Query("find().sort({createdAt:-1})")
 	public void cacheAllWishlists();
-
-	public Optional<List<Wishlist>> findAllWishlistsByUserId(String userId);
 
 	public void createWishlistByUserId(String client, String locale, String userId, Wishlist wishlist);
 
 	public Optional<WriteResult> updateWishlistByUserIdAndWishlistId(String userId, String wishlistId, Wishlist wishlist);
 
 	public void deleteWishlistByUserIdAndWishlistId(String userId, String wishlistId);
-	
-	public Wishlist findWishlistByUserIdAndWishlistId(String wishlistId);
-	
-	public List<Wishlist> findAllPublicWishlists();
-	
-	public List<Wishlist> findAllWishlistsByUserIdAndSource(String userId, String source);
-	
-	public List<Wishlist> findAllWishlistsByUserIdAndPrivacy(String userId, String privacy);
-	
-	public List<Wishlist> findAllWishlistsByUserIdAndType(String userId, String type);
-	
-	public List<Wishlist> findAllWishlistsByUserIdAndSourceAndPrivacyAndType(String userId, String source, String privacy, String type);
 
-	public List<Wishlist> findAllWishlistsByUserIdAndSourceAndPrivacy(String userId, String source, String privacy);
+	public void deleteAllWishlistsByUserId(String userId);
 	
-	public List<Wishlist> findAllWishlistsByUserIdAndSourceAndType(String userId, String source, String type);
-	
-	public List<Wishlist> findAllWishlistsByUserIdAndPrivacyAndType(String userId, String privacy, String type);
+	public Optional<List<Wishlist>> findAllWishlistsByUserId(String userId) throws ParseException;
 
+	public Optional<Wishlist> findWishlistByUserIdAndWishlistId(String wishlistId);
+	
+	public Optional<List<Wishlist>> findAllPublicWishlists(String privacy);
+	
+	public Optional<List<Wishlist>> findAllWishlistsByUserIdAndSource(String userId, String source);
+	
+	public Optional<List<Wishlist>> findAllWishlistsByUserIdAndPrivacy(String userId, String privacy);
+	
+	public Optional<List<Wishlist>> findAllWishlistsByUserIdAndType(String userId, String type);
+	
+	public Optional<List<Wishlist>> findAllWishlistsByUserIdAndSourceAndPrivacyAndType(String userId, String source, String privacy, String type);
+
+	public Optional<List<Wishlist>> findAllWishlistsByUserIdAndSourceAndPrivacy(String userId, String source, String privacy);
+	
+	public Optional<List<Wishlist>> findAllWishlistsByUserIdAndSourceAndType(String userId, String source, String type);
+	
+	public Optional<List<Wishlist>> findAllWishlistsByUserIdAndPrivacyAndType(String userId, String privacy, String type);
+	
+	public Optional<List<Wishlist>> findAllWishlistsByUserIdAndSortOrder(String userId, String sortOrder);
+
+	public Set<Item> findAllUniqueWishlistItemsByUserId(String userId);
 }

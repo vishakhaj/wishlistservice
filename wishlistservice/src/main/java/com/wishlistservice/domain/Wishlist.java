@@ -1,11 +1,14 @@
 package com.wishlistservice.domain;
 
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import com.wishlistservice.common.Privacy;
+import com.wishlistservice.common.SortOrder;
 import com.wishlistservice.common.Source;
 import com.wishlistservice.common.Type;
 
@@ -31,15 +34,20 @@ public class Wishlist {
 
 	private Privacy privacy;
 
+	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
 	private Date modifiedOn;
 
 	private String userId;
 
+	private SortOrder sortOrder;
+
+	private List<Item> items;
+
 	public Wishlist() {
 	}
-
+	
 	public Wishlist(String name, String description, String client, String locale, Date createdAt, Source source,
-			Type type, Privacy privacy, Date modifiedOn, String userId) {
+			Type type, Privacy privacy, Date modifiedOn, String userId, SortOrder sortOrder, List<Item> items) {
 		this.name = name;
 		this.description = description;
 		this.client = client;
@@ -50,6 +58,8 @@ public class Wishlist {
 		this.privacy = privacy;
 		this.modifiedOn = modifiedOn;
 		this.userId = userId;
+		this.sortOrder = sortOrder;
+		this.items = items;
 	}
 
 	public String getWishlistId() {
@@ -96,9 +106,20 @@ public class Wishlist {
 		return userId;
 	}
 
+	public SortOrder getSortOrder() {
+		return sortOrder;
+	}
+
 	@Override
 	public String toString() {
-		return "Wishlist [wishlistId=" + wishlistId + ", name=" + name + ", description=" + description + "]";
+		return "Wishlist [wishlistId=" + wishlistId + ", name=" + name + ", description=" + description + ", client="
+				+ client + ", locale=" + locale + ", createdAt=" + createdAt + ", source=" + source + ", type=" + type
+				+ ", privacy=" + privacy + ", modifiedOn=" + modifiedOn + ", userId=" + userId + ", sortOrder="
+				+ sortOrder + ", items=" + items + "]";
+	}
+
+	public List<Item> getItems() {
+		return items;
 	}
 
 }
