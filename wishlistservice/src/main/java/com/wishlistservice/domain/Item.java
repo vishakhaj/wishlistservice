@@ -16,6 +16,10 @@ public class Item {
 	private String client;
 
 	private String locale;
+	
+	private String userId;
+	
+	private String wishlistId;
 
 	public Item() {
 	}
@@ -27,6 +31,20 @@ public class Item {
 		this.rating = rating;
 		this.client = client;
 		this.locale = locale;
+	}
+	
+	public Item(String userId, String wishlistId, String itemId){
+		this.userId = userId;
+		this.wishlistId = wishlistId;
+		this.itemId = itemId;
+	}
+	
+	public String getUserId() {
+		return userId;
+	}
+
+	public String getWishlistId() {
+		return wishlistId;
 	}
 
 	public String getItemId() {

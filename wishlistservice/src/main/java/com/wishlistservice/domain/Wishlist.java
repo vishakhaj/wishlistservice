@@ -1,5 +1,6 @@
 package com.wishlistservice.domain;
 
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -7,6 +8,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import com.wishlistservice.common.Privacy;
 import com.wishlistservice.common.SortOrder;
 import com.wishlistservice.common.Source;
@@ -16,16 +18,20 @@ import com.wishlistservice.common.Type;
 public class Wishlist {
 
 	@Id
+	//@JsonView(Summary.class)
 	private String wishlistId;
 
+	//@JsonView(Summary.class)
 	private String name;
 
+	//@JsonView(WishlistView.Summary.class)
 	private String description;
 
 	private String client;
 
 	private String locale;
 
+	@JsonView(WishlistView.Summary.class)
 	private Date createdAt;
 
 	private Source source;
@@ -35,6 +41,7 @@ public class Wishlist {
 	private Privacy privacy;
 
 	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+	//@JsonView(WishlistView.Summary.class)
 	private Date modifiedOn;
 
 	private String userId;

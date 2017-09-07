@@ -21,6 +21,7 @@ public class ConsulRepository {
 	private static final Logger logger = LoggerFactory.getLogger(ConsulRepository.class);
 
 	private static final String CONSUL_ADDRESS = "http://" + System.getenv("CONSUL") + ":8500";
+	//private static final String CONSUL_ADDRESS = "http://" + "192.168.1.2:8500";
 
 	private static final String KEY_VALUE_PATH = "v1/kv";
 

@@ -1,14 +1,19 @@
+
 package com.wishlistservice.controller;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.util.List;
+import java.util.Objects;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,114 +21,137 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.wishlistservice.common.ApiError;
+import com.wishlistservice.domain.Item;
 import com.wishlistservice.domain.Wishlist;
+import com.wishlistservice.hateoas.controller.assembler.WishlistResourceAssembler;
+import com.wishlistservice.hateoas.resource.WishlistResource;
+import com.wishlistservice.service.ItemService;
 import com.wishlistservice.service.WishlistService;
+import com.wishlistservice.service.Wishlist_Item_Service;
 import com.wishlistservice.viewbean.WishlistViewBean;
 
 @RestController
-@RequestMapping(value = "/{client}/{locale}/api")
+@RequestMapping(value = "/api")
 public class WishlistController {
 
 	@Autowired
 	private WishlistService wishlistService;
 
-	/**
-	 * @param client
-	 *            - Takes the specified client from the REST url.
-	 * @param locale
-	 *            - Takes the specified locale from the REST url.
-	 * @param userId
-	 *            - Takes the user ID
-	 * @param wishlist
-	 *            - Takes the wish-list information specified in json Creates a
-	 *            wish-list of a specific user.
-	 * @throws IOException
-	 */
-	@RequestMapping(value = "/users/user/{userId}/wishlists", method = RequestMethod.POST)
-	public void createWishlistByUserId(@PathVariable String client, @PathVariable String locale,
-			@PathVariable("userId") String userId, @Valid @RequestBody Wishlist wishlist,
-			HttpServletResponse response) {
+	@Autowired
+	private Wishlist_Item_Service wishlist_item_Service;
+
+	@Autowired
+	private ItemService itemService;
+
+	@Autowired
+	private HttpSession httpSession;
+
+	@Autowired
+	private WishlistResourceAssembler wishlistResourceAssembler;
+
+	// Write Queries
+
+	@RequestMapping(value = "/{client}/{locale}/users/user/{userId}/wishlists", method = RequestMethod.POST)
+	public ResponseEntity<WishlistResource> createWishlistByUserId(@PathVariable("client") String client,
+			@PathVariable("locale") String locale, @PathVariable("userId") String userId,
+			@Valid @RequestBody Wishlist wishlist) throws IOException, ParseException, URISyntaxException {
+
 		wishlistService.createWishlist(client, locale, userId, wishlist);
 		System.out.println("Wishlist saved..");
-		response.setStatus(HttpStatus.CREATED.value());
+
+		httpSession.setAttribute("userIdSession", userId);
+		httpSession.setAttribute("clientSession", client);
+		httpSession.setAttribute("localeSession", locale);
+
+		WishlistResource resource = wishlistResourceAssembler.returnUriForAddWishlist();
+		return new ResponseEntity<>(resource, HttpStatus.CREATED);
 	}
 
-	/**
-	 * 
-	 * @param userId
-	 * @param wishlistId
-	 * @param wishlist
-	 *            Updates a wish-list by wishlist ID belonging to a specific
-	 *            user ID.
-	 */
-	@RequestMapping(value = "/users/user/{userId}/wishlists/wishlist/{wishlistId}", method = RequestMethod.PUT)
-	public void updateWishlistByUserIdAndWishlistId(@PathVariable("userId") String userId,
-			@PathVariable("wishlistId") String wishlistId, @RequestBody Wishlist wishlist,
-			HttpServletResponse response) {
+	@RequestMapping(value = "/{client}/{locale}/users/user/{userId}/wishlists/wishlist/{wishlistId}", method = RequestMethod.PUT)
+	public ResponseEntity<WishlistResource> updateWishlistByUserIdAndWishlistId(@PathVariable("client") String client,
+			@PathVariable("locale") String locale, @PathVariable("userId") String userId,
+			@PathVariable("wishlistId") String wishlistId, @RequestBody Wishlist wishlist)
+			throws IOException, URISyntaxException, ParseException {
+
 		wishlistService.updateWishlistByUserIdAndWishlistId(userId, wishlistId, wishlist);
-		response.setStatus(HttpStatus.OK.value());
+
+		wishlistService.getAllWishlistsFromCache();
+		WishlistViewBean w = wishlistService.getWishlistByUserIdAndWishlistId(userId, wishlistId);
+		WishlistResource wishlistResource = new WishlistResource();
+		wishlistResource.setItemAddedToWishlist(true);
+		WishlistResource resource = wishlistResourceAssembler
+				.returnUriForUpdateWishlist(wishlistResource.isItemAddedToWishlist(), w);
+
+		return new ResponseEntity<WishlistResource>(resource, HttpStatus.OK);
 	}
 
-	/**
-	 * 
-	 * @param wishlistId
-	 *            Deletes a wish-list by wish-list ID of a specific user ID.
-	 */
-	@RequestMapping(value = "/users/user/{userId}/wishlists/wishlist/{wishlistId}", method = RequestMethod.DELETE)
-	public void deleteWishlistByUserIdAndWishlistId(@PathVariable("userId") String userId,
-			@PathVariable("wishlistId") String wishlistId, HttpServletResponse response) {
+	@RequestMapping(value = "/{client}/{locale}/users/user/{userId}/wishlists/wishlist/{wishlistId}", method = RequestMethod.DELETE)
+	public ResponseEntity<?> deleteWishlistByUserIdAndWishlistId(@PathVariable("client") String client,
+			@PathVariable("locale") String locale, @PathVariable("userId") String userId,
+			@PathVariable("wishlistId") String wishlistId) throws IOException, ParseException, URISyntaxException {
+
 		wishlistService.deleteWishlistByUserIdAndWishlistId(userId, wishlistId);
-		response.setStatus(HttpStatus.OK.value());
+		wishlistService.getAllWishlistsFromCache();
+		
+		WishlistResource resource = wishlistResourceAssembler.returnUriForDeleteWishlist();
+
+		return new ResponseEntity<>(resource, HttpStatus.OK);
 	}
 
-	/**
-	 * @param userId
-	 *            Deletes all wish-lists belonging to a user ID.
-	 */
-	@RequestMapping(value = "/users/user/{userId}/wishlists", method = RequestMethod.DELETE)
-	public void deleteAllWishlistsByUserId(@PathVariable("userId") String userId, HttpServletResponse response) {
+	@RequestMapping(value = "/{client}/{locale}/users/user/{userId}/wishlists", method = RequestMethod.DELETE)
+	public ResponseEntity<?> deleteAllWishlistsByUserId(@PathVariable("client") String client,
+			@PathVariable("locale") String locale, @PathVariable("userId") String userId) throws IOException, URISyntaxException, ParseException {
+
 		wishlistService.deleteAllWishlistsByUserId(userId);
-		response.setStatus(HttpStatus.OK.value());
+		wishlistService.getAllWishlistsFromCache();
+
+		ApiError apiError = new ApiError(HttpStatus.OK, "All Wishlists deleted");
+		return new ResponseEntity<>(apiError, apiError.getStatus());
+		
 	}
 
-	/**
-	 * @return All Wish-lists of a specific user ID.
-	 * @throws IOException
-	 * @throws ParseException
-	 */
-	@RequestMapping(value = "/users/user/{userId}/wishlists", method = RequestMethod.GET)
-	public List<WishlistViewBean> getAllWishlistsByUserId(@PathVariable("userId") String userId,
-			HttpServletResponse response) throws IOException, ParseException {
+	// Read Queries
+
+	@RequestMapping(value = "/{client}/{locale}/users/user/{userId}/wishlists", method = RequestMethod.GET)
+	public ResponseEntity<?> getAllWishlistsByUserId(@PathVariable("client") String client,
+			@PathVariable("locale") String locale, @PathVariable("userId") String userId)
+			throws IOException, ParseException, URISyntaxException {
+
 		wishlistService.getAllWishlistsFromCache();
 		List<WishlistViewBean> wishlists = wishlistService.getAllWishlistsByUserId(userId);
+		List<WishlistResource> wishlistResources = wishlistResourceAssembler.toResources(wishlists);
+		
 		if (wishlists == null || wishlists.isEmpty()) {
-			response.sendError(HttpStatus.NOT_FOUND.value(), "Wishlists for the specified user is Not Found");
+			ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "You have no wishlists");
+			return new ResponseEntity<>(apiError, apiError.getStatus());
 		}
-		response.setStatus(HttpStatus.OK.value());
-		return wishlists;
+
+		return new ResponseEntity<List<WishlistResource>>(wishlistResources, HttpStatus.OK);
 	}
 
-	/**
-	 * @param wishlistId
-	 *            - Takes the unique wish-list ID
-	 * @return Wish-list of a specific wish-list ID
-	 * @throws IOException
-	 */
-	@RequestMapping(value = "/users/user/{userId}/wishlists/wishlist/{wishlistId}", method = RequestMethod.GET)
-	public WishlistViewBean getWishlistByUserIdAndWishlistId(@PathVariable("userId") String userId,
-			@PathVariable("wishlistId") String wishlistId, HttpServletResponse response) throws IOException {
+	@RequestMapping(value = "/{client}/{locale}/users/user/{userId}/wishlists/wishlist/{wishlistId}", method = RequestMethod.GET)
+	public ResponseEntity<?> getWishlistByUserIdAndWishlistId(@PathVariable("client") String client,
+			@PathVariable("locale") String locale, @PathVariable("userId") String userId,
+			@PathVariable("wishlistId") String wishlistId) throws IOException, URISyntaxException, ParseException {
+
+		httpSession.setAttribute("userIdSession", userId);
+		httpSession.setAttribute("clientSession", client);
+		httpSession.setAttribute("localeSession", locale);
+
+		wishlistService.getAllWishlistsFromCache();
 		WishlistViewBean wishlist = wishlistService.getWishlistByUserIdAndWishlistId(userId, wishlistId);
-		if (wishlist == null) {
-			response.sendError(HttpStatus.NOT_FOUND.value(), "Specific wishlist for the user is not found");
+		System.out.println("wishlist: " + wishlist);
+		
+		if(wishlist.getWishlistId() == null){
+			ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "You cannot access this wishlist.");
+			return new ResponseEntity<>(apiError, apiError.getStatus());
 		}
-		response.setStatus(HttpStatus.OK.value());
-		return wishlist;
+		
+		WishlistResource wishlistResource = wishlistResourceAssembler.toResource(wishlist);
+		return new ResponseEntity<WishlistResource>(wishlistResource, HttpStatus.OK);
 	}
 
-	/**
-	 * @return all wish-lists that are PUBLIC
-	 * @throws IOException
-	 */
 	@RequestMapping(value = "/wishlists", method = RequestMethod.GET)
 	public List<WishlistViewBean> getAllPublicWishlists(@RequestParam("privacy") String privacy,
 			HttpServletResponse response) throws IOException {
@@ -136,70 +164,47 @@ public class WishlistController {
 		return wishlists;
 	}
 
-	/**
-	 * @param userId
-	 * @param source
-	 * @return all wish-lists by SOURCE of a specific user ID
-	 * @throws IOException
-	 */
 	@RequestMapping(value = "/users/user/{userId}/wishlists", params = "source", method = RequestMethod.GET)
 	public List<WishlistViewBean> getAllWishlistsByUserIdAndSource(@PathVariable("userId") String userId,
 			@RequestParam("source") String source, HttpServletResponse response) throws IOException {
 		wishlistService.getAllWishlistsFromCache();
 		List<WishlistViewBean> listOfWishlists = wishlistService.getAllWishlistsByUserIdAndSource(userId, source);
 		if (listOfWishlists == null) {
-			response.sendError(HttpStatus.BAD_REQUEST.value(), "Required value for the parameter is empty or not correct.");
-		}else if(listOfWishlists.isEmpty()){
+			response.sendError(HttpStatus.BAD_REQUEST.value(),
+					"Required value for the parameter is empty or not correct.");
+		} else if (listOfWishlists.isEmpty()) {
 			response.sendError(HttpStatus.NOT_FOUND.value(), "Wishlist is null or empty");
 		}
 		response.setStatus(HttpStatus.OK.value());
 		return listOfWishlists;
 	}
 
-	/**
-	 * @param userId
-	 * @param privacy
-	 * @return all wish-lists by PRIVACY of a specific user ID.
-	 * @throws IOException
-	 */
 	@RequestMapping(value = "/users/user/{userId}/wishlists", params = "privacy", method = RequestMethod.GET)
 	public List<WishlistViewBean> getAllWishlistsByUserIdAndPrivacy(@PathVariable("userId") String userId,
 			@RequestParam("privacy") String privacy, HttpServletResponse response) throws IOException {
 		wishlistService.getAllWishlistsFromCache();
 		List<WishlistViewBean> listOfWishlists = wishlistService.getAllWishlistsByUserIdAndPrivacy(userId, privacy);
 		if (listOfWishlists == null || listOfWishlists.isEmpty()) {
-			response.sendError(HttpStatus.BAD_REQUEST.value(), "Required value for the parameter is empty or not correct.");
+			response.sendError(HttpStatus.BAD_REQUEST.value(),
+					"Required value for the parameter is empty or not correct.");
 		}
 		response.setStatus(HttpStatus.OK.value());
 		return listOfWishlists;
 	}
 
-	/**
-	 * @param userId
-	 * @param type
-	 * @return all wish-lists by TYPE of a specific user ID.
-	 * @throws IOException
-	 */
 	@RequestMapping(value = "/users/user/{userId}/wishlists", params = "type", method = RequestMethod.GET)
 	public List<WishlistViewBean> getAllWishlistsByUserIdAndType(@PathVariable("userId") String userId,
 			@RequestParam("type") String type, HttpServletResponse response) throws IOException {
 		wishlistService.getAllWishlistsFromCache();
 		List<WishlistViewBean> listOfWishlists = wishlistService.getAllWishlistsByUserIdAndType(userId, type);
 		if (listOfWishlists == null || listOfWishlists.isEmpty()) {
-			response.sendError(HttpStatus.BAD_REQUEST.value(), "Required value for the parameter is empty or not correct.");
+			response.sendError(HttpStatus.BAD_REQUEST.value(),
+					"Required value for the parameter is empty or not correct.");
 		}
 		response.setStatus(HttpStatus.OK.value());
 		return listOfWishlists;
 	}
 
-	/**
-	 * @param userId
-	 * @param source
-	 * @param privacy
-	 * @param type
-	 * @return all wish-lists by SOURCE, TYPE and PRIVACY of a specific user ID.
-	 * @throws IOException
-	 */
 	@RequestMapping(value = "/users/user/{userId}/wishlists", params = { "source", "type",
 			"privacy" }, method = RequestMethod.GET)
 	public List<WishlistViewBean> getAllWishlistsByUserIdAndSourceAndPrivacyAndType(
@@ -210,19 +215,13 @@ public class WishlistController {
 		List<WishlistViewBean> listOfWishlists = wishlistService
 				.getAllWishlistsByUserIdAndSourceAndPrivacyAndType(userId, source, privacy, type);
 		if (listOfWishlists == null || listOfWishlists.isEmpty()) {
-			response.sendError(HttpStatus.BAD_REQUEST.value(), "Required value for the parameter is empty or not correct.");
+			response.sendError(HttpStatus.BAD_REQUEST.value(),
+					"Required value for the parameter is empty or not correct.");
 		}
 		response.setStatus(HttpStatus.OK.value());
 		return listOfWishlists;
 	}
 
-	/**
-	 * @param userId
-	 * @param source
-	 * @param privacy
-	 * @return all wish-lists by SOURCE and PRIVACY of a specific user ID.
-	 * @throws IOException
-	 */
 	@RequestMapping(value = "/users/user/{userId}/wishlists", params = { "source",
 			"privacy" }, method = RequestMethod.GET)
 	public List<WishlistViewBean> getAllWishlistsByUserIdAndSourceAndPrivacy(@PathVariable("userId") String userId,
@@ -232,19 +231,13 @@ public class WishlistController {
 		List<WishlistViewBean> listOfWishlists = wishlistService.getAllWishlistsByUserIdAndSourceAndPrivacy(userId,
 				source, privacy);
 		if (listOfWishlists == null || listOfWishlists.isEmpty()) {
-			response.sendError(HttpStatus.BAD_REQUEST.value(), "Required value for the parameter is empty or not correct.");
+			response.sendError(HttpStatus.BAD_REQUEST.value(),
+					"Required value for the parameter is empty or not correct.");
 		}
 		response.setStatus(HttpStatus.OK.value());
 		return listOfWishlists;
 	}
 
-	/**
-	 * @param userId
-	 * @param source
-	 * @param type
-	 * @return all wish-lists by SOURCE AND TYPE of a specific user ID
-	 * @throws IOException
-	 */
 	@RequestMapping(value = "/users/user/{userId}/wishlists", params = { "source", "type" }, method = RequestMethod.GET)
 	public List<WishlistViewBean> getAllWishlistsByUserIdAndSourceAndType(@PathVariable("userId") String userId,
 			@RequestParam("source") String source, @RequestParam("type") String type, HttpServletResponse response)
@@ -253,19 +246,13 @@ public class WishlistController {
 		List<WishlistViewBean> listOfWishlists = wishlistService.getAllWishlistsByUserIdAndSourceAndType(userId, source,
 				type);
 		if (listOfWishlists == null || listOfWishlists.isEmpty()) {
-			response.sendError(HttpStatus.BAD_REQUEST.value(), "Required value for the parameter is empty or not correct.");
+			response.sendError(HttpStatus.BAD_REQUEST.value(),
+					"Required value for the parameter is empty or not correct.");
 		}
 		response.setStatus(HttpStatus.OK.value());
 		return listOfWishlists;
 	}
 
-	/**
-	 * @param userId
-	 * @param privacy
-	 * @param type
-	 * @return all wish-lists by PRIVACY and TYPE of a specific user ID.
-	 * @throws IOException
-	 */
 	@RequestMapping(value = "/users/user/{userId}/wishlists", params = { "privacy",
 			"type" }, method = RequestMethod.GET)
 	public List<WishlistViewBean> getAllWishlistsByUserIdAndPrivacyAndType(@PathVariable("userId") String userId,
@@ -275,22 +262,61 @@ public class WishlistController {
 		List<WishlistViewBean> listOfWishlists = wishlistService.getAllWishlistsByUserIdAndPrivacyAndType(userId,
 				privacy, type);
 		if (listOfWishlists == null || listOfWishlists.isEmpty()) {
-			response.sendError(HttpStatus.BAD_REQUEST.value(), "Required value for the parameter is empty or not correct.");
+			response.sendError(HttpStatus.BAD_REQUEST.value(),
+					"Required value for the parameter is empty or not correct.");
 		}
 		response.setStatus(HttpStatus.OK.value());
 		return listOfWishlists;
 	}
 
-	@RequestMapping(value = "/users/user/{userId}/wishlists", params = "sortOrder", method = RequestMethod.GET)
-	public List<WishlistViewBean> getAllWishlistsbyUserIdAndSortOrder(@PathVariable("userId") String userId,
-			@RequestParam("sortOrder") String sortOrder, HttpServletResponse response) throws IOException {
+	@RequestMapping(value = "/{client}/{locale}/users/user/{userId}/wishlists/wishlist/{wishlistId}/items/item/{itemId}", method = RequestMethod.PUT)
+	public ResponseEntity<?> updateItemToWishlist(@PathVariable("client") String client,
+			@PathVariable("locale") String locale, @PathVariable("userId") String userId,
+			@PathVariable("wishlistId") String wishlistId, @PathVariable("itemId") String itemId)
+			throws URISyntaxException, IOException, ParseException {
 
-		List<WishlistViewBean> listOfWishlists = wishlistService.getAllWishlistsByUserIdAndSortOrder(userId, sortOrder);
-		if (listOfWishlists == null || listOfWishlists.isEmpty()) {
-			response.sendError(HttpStatus.BAD_REQUEST.value(), "Required value for the parameter is empty or not correct.");
+		itemService.getCachedItems();
+		List<Item> items = itemService.getAllItems();
+		wishlist_item_Service.addItemToWishlist(userId, wishlistId, itemId);
+		WishlistViewBean wishlist = wishlistService.getWishlistByUserIdAndWishlistId(userId, wishlistId);
+		WishlistResource resource = wishlistResourceAssembler.returnUriForItemAddedAndDeletedFromWishlist(wishlistId,
+				userId);
+
+		for (Item item : wishlist.getItems()) {
+			if (Objects.equals(item.getItemId(), itemId)) {
+				ApiError apiError = new ApiError(HttpStatus.CONFLICT, "Item already exists", resource);
+				return new ResponseEntity<>(apiError, apiError.getStatus());
+			}
 		}
-		response.setStatus(HttpStatus.OK.value());
-		return listOfWishlists;
+
+		for (Item item : items) {
+			if (item.getItemId().equals(itemId)) {
+				return new ResponseEntity<WishlistResource>(resource, HttpStatus.CREATED);
+			}
+		}
+		ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Item not found", resource);
+		return new ResponseEntity<>(apiError, apiError.getStatus());
+	}
+
+	@RequestMapping(value = "/{client}/{locale}/users/user/{userId}/wishlists/wishlist/{wishlistId}/items/item/{itemId}", method = RequestMethod.DELETE)
+	public ResponseEntity<?> deleteItemFromWishlist(@PathVariable("client") String client,
+			@PathVariable("locale") String locale, @PathVariable("userId") String userId,
+			@PathVariable("wishlistId") String wishlistId, @PathVariable("itemId") String itemId)
+			throws URISyntaxException, IOException, ParseException {
+
+		WishlistViewBean wishlist = wishlistService.getWishlistByUserIdAndWishlistId(userId, wishlistId);
+		WishlistResource resource = wishlistResourceAssembler.returnUriForItemAddedAndDeletedFromWishlist(wishlistId,
+				userId);
+
+		for (Item item : wishlist.getItems()) {
+			if (item.getItemId().equals(itemId)) {
+				wishlist_item_Service.deleteItemFromWishlist(userId, wishlistId, itemId);
+				return new ResponseEntity<>(resource, HttpStatus.OK);
+			}
+		}
+
+		ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, "Item does not exist", resource);
+		return new ResponseEntity<>(apiError, apiError.getStatus());
 	}
 
 }

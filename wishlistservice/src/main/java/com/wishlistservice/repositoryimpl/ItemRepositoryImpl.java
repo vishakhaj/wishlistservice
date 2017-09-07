@@ -10,7 +10,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -87,6 +86,23 @@ public class ItemRepositoryImpl implements ItemRepository{
 				}
 			}
 		}
+		return null;
+	}
+
+	@Override
+	public List<Item> findAllItems() {
+		System.out.println("code goes in find all items");
+		for(Entry<Client, Map<Locale, List<Item>>>  clientEntry : cache.asMap().entrySet()){
+			Map<Locale, List<Item>> localeMap = clientEntry.getValue();
+			if(localeMap!=null){
+				for(Entry<Locale, List<Item>> localeEntry : localeMap.entrySet()){
+					System.out.println("code returns items");
+					List<Item> items = localeEntry.getValue();
+					return items;
+				}
+			}
+		}
+		System.out.println("code returns null");
 		return null;
 	}
 }

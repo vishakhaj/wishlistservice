@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -30,6 +31,8 @@ import org.springframework.stereotype.Repository;
 import com.google.common.base.Objects;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.mongodb.BasicDBObjectBuilder;
+import com.mongodb.DBObject;
 import com.mongodb.WriteResult;
 import com.wishlistservice.common.Client;
 import com.wishlistservice.common.Clients;
@@ -87,6 +90,8 @@ public class CustomWishlistRepositoryImpl implements CustomWishlistRepository {
 		Map<Client, Map<Locale, List<Wishlist>>> mapByClient = new HashMap<>();
 
 		if (wishlists.isEmpty()) {
+			cacheByClientAndLocale.invalidateAll();
+			cacheByClientAndLocale.putAll(mapByClient);
 			return new HashMap<>();
 		}
 		for (Wishlist wishlist : wishlists) {
@@ -116,10 +121,14 @@ public class CustomWishlistRepositoryImpl implements CustomWishlistRepository {
 	 * @return cache of wish-lists by USER ID.
 	 */
 	private Map<String, List<Wishlist>> cacheWishlistsByUserId(List<Wishlist> wishlists) {
+		System.out.println("wishlists: " + wishlists);
 		Map<String, List<Wishlist>> mapByUserId = new HashMap<>();
 		if (wishlists.isEmpty()) {
+			cacheByUserId.invalidateAll();
+			cacheByUserId.putAll(mapByUserId);
 			return new HashMap<>();
 		}
+		
 		for (Wishlist wishlist : wishlists) {
 			if (wishlist != null) {
 				System.out.println("user id: " + wishlist.getUserId());
@@ -142,18 +151,27 @@ public class CustomWishlistRepositoryImpl implements CustomWishlistRepository {
 	 * Creates a wish-list by a specified client and locale and user ID.
 	 */
 	public void createWishlistByUserId(String client, String locale, String userId, Wishlist wishlist) {
-		ZoneId zoneId = ZoneId.of("Europe/Berlin");
-		Instant instant = Instant.now();
-		System.out.println("instant" + instant);
-		// ZonedDateTime zdt = instant.atZone(zoneId);
-		// System.out.println("zoned time zone: " + zdt);
-		LocalDateTime ldt = LocalDateTime.now();
-		System.out.println("local date time: " + ldt);
-		ZonedDateTime zdt = ldt.atZone(zoneId);
-		// ZonedDateTime zdt = ZonedDateTime.of(ldt, zoneId);
-		Date date = Date.from(zdt.toInstant());
+		
+//		ZoneId zoneId = ZoneId.of("Europe/Berlin");
+//		Instant instant = Instant.now();
+//		
+////		System.out.println("instant" + instant);
+//		
+//		ZonedDateTime zdt = instant.atZone(zoneId);
+//		System.out.println("Zone date time: " + zdt);
+//		
+////		System.out.println("zoned time zone: " + zdt);
+//		
+////		LocalDateTime ldt = LocalDateTime.now();
+////		System.out.println("local date time: " + ldt);
+////		ZonedDateTime zdt = ldt.atZone(zoneId);
+////		// ZonedDateTime zdt = ZonedDateTime.of(ldt, zoneId);
+//		
+//		Date date = Date.from(zdt.toInstant());
+//		System.out.println("date: " + date);
+//		
 		mongoTemplate.save(new Wishlist(wishlist.getName(), wishlist.getDescription(), client, locale, new Date(),
-				wishlist.getSource(), wishlist.getType(), wishlist.getPrivacy(), date, userId, SortOrder.DEFAULT,
+				wishlist.getSource(), wishlist.getType(), wishlist.getPrivacy(), new Date(), userId, SortOrder.DEFAULT,
 				new ArrayList<Item>()));
 	}
 
@@ -197,10 +215,21 @@ public class CustomWishlistRepositoryImpl implements CustomWishlistRepository {
 					Query query = new Query();
 					Criteria criteria = Criteria.where("_id").is(wishlistId);
 					query.addCriteria(criteria);
-					mongoTemplate.findAndRemove(query, Wishlist.class);
+					Wishlist wishlistDeleted = mongoTemplate.findAndRemove(query, Wishlist.class);
+					
+					System.out.println("wishlist deleted: " + wishlistDeleted);
 				}
 			}
 		}
+		
+//		String[] wishlistArray = { wishlistId };
+//		Query findQuery = Query.query(Criteria.where("wishlistId").in(Arrays.asList(wishlistArray)));
+//		DBObject pullUpdate = BasicDBObjectBuilder.start()
+//				.add("wishlistId", BasicDBObjectBuilder.start().add("$in", wishlistArray).get()).get();
+//
+//		Update update = new Update().pull("wishlist", pullUpdate);
+//		WriteResult wishlistDeleted = mongoTemplate.updateMulti(findQuery, update, Wishlist.class);
+//		return Optional.of(wishlistDeleted);
 	}
 
 	@Override
@@ -223,6 +252,7 @@ public class CustomWishlistRepositoryImpl implements CustomWishlistRepository {
 	 * @throws ParseException
 	 */
 	public Optional<List<Wishlist>> findAllWishlistsByUserId(String userId) throws ParseException {
+		cacheAllWishlists();
 		List<Wishlist> wishlists = cacheByUserId.getIfPresent(userId);
 		if (wishlists == null || wishlists.isEmpty()) {
 			return Optional.empty();

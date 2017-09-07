@@ -3,12 +3,12 @@ package com.wishlistservice.service;
 import java.net.URISyntaxException;
 import java.util.Optional;
 
-import org.assertj.core.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.base.Strings;
 import com.mongodb.WriteResult;
 import com.wishlistservice.domain.Item;
 import com.wishlistservice.domain.Wishlist;
