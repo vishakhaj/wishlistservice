@@ -488,5 +488,44 @@ public class CustomWishlistRepositoryImpl implements CustomWishlistRepository {
 		}
 		return null;
 	}
+	
+	@Override
+	public Optional<List<Wishlist>> findAllWishlists() {
+		Map<Locale, List<Wishlist>> client = cacheByClientAndLocale.getIfPresent(Clients.clientByShortName("MediaDE"));
+		System.out.println(client);
+		for(Entry<Client, Map<Locale, List<Wishlist>>>  clientEntry : cacheByClientAndLocale.asMap().entrySet()){
+			System.out.println("Goes inside this..");
+			Map<Locale, List<Wishlist>> localeMap = clientEntry.getValue();
+			if(localeMap!=null){
+				for(Entry<Locale, List<Wishlist>> localeEntry : localeMap.entrySet()){
+					List<Wishlist> wishlists = localeEntry.getValue();
+					return Optional.of(wishlists);
+				}
+			}
+		}
+		return Optional.empty();
+	}
+	
+	@Override
+	public int countWishlists(String privacy) {
+		cacheAllWishlists();
+		Optional<List<Wishlist>> wishlists = findAllWishlists();
+		int count =  0;
+		System.out.println("wishlists: "  + wishlists);
+		
+		if(!wishlists.isPresent()){
+			return 0;
+		}
+		
+		for(Wishlist wishlist : wishlists.get()){
+			if(wishlist.getPrivacy().toString().equals(privacy)){
+				count += 1;
+				
+			}else if(wishlist.getPrivacy().toString().equals(privacy)){
+				count += 1;
+			}
+		}
+		return count;
+	}
 
 }

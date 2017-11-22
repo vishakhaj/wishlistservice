@@ -64,13 +64,10 @@ public class WishlistResourceAssembler extends ResourceAssemblerSupport<Wishlist
 						item.getItemId())).withRel("delete-this-item"));
 			}
 
-			// delete all items from wishlist
-			// wishlistResource.add(linkTo(methodOn(WishlistController.class).deleteAllItemsFromWishlist(
-			// wishlistResource.getWishlist().getClient(),
-			// wishlistResource.getWishlist().getLocale(),
-			// wishlistResource.getWishlist().getUserId(),
-			// wishlistResource.getWishlist().getWishlistId()))
-			// .withRel("delete-all-items"));
+			//view all wishlist
+			wishlistResource.add(linkTo(methodOn(WishlistController.class).getAllWishlistsByUserId(httpSession.getAttribute("clientSession").toString(),
+					httpSession.getAttribute("localeSession").toString(),
+					httpSession.getAttribute("userIdSession").toString())).withRel("view-all-wishlists"));
 
 		} catch (IOException e) {
 			e.printStackTrace();

@@ -1,6 +1,7 @@
 package com.wishlistservice.repositoryimpl;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,7 @@ public class Wishlist_Item_RepositoryImpl implements Wishlist_Item_Repository {
 		Query query = new Query(Criteria.where("_id").is(wishlist.getWishlistId()));
 		Update update = new Update();
 		update.addToSet("items", item);
+		update.set("modifiedOn", new Date());
 		WriteResult itemAdded = mongoTemplate.updateFirst(query, update, Wishlist.class);
 		return Optional.of(itemAdded);
 	}
@@ -40,6 +42,7 @@ public class Wishlist_Item_RepositoryImpl implements Wishlist_Item_Repository {
 				.add("itemId", BasicDBObjectBuilder.start().add("$in", itemArray).get()).get();
 
 		Update update = new Update().pull("items", pullUpdate);
+		update.set("modifiedOn", new Date());
 		WriteResult itemDeleted = mongoTemplate.updateMulti(findQuery, update, Wishlist.class);
 		return Optional.of(itemDeleted);
 	}

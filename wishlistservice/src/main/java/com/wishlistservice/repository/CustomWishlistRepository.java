@@ -45,4 +45,8 @@ public interface CustomWishlistRepository {
 	public Optional<List<Wishlist>> findAllWishlistsByUserIdAndSortOrder(String userId, String sortOrder);
 
 	public Set<Item> findAllUniqueWishlistItemsByUserId(String userId);
+	
+	public Optional<List<Wishlist>> findAllWishlists();
+	
+	public int countWishlists(String privacy);
 }
