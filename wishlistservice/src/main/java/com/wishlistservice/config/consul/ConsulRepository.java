@@ -20,8 +20,9 @@ public class ConsulRepository {
 
 	private static final Logger logger = LoggerFactory.getLogger(ConsulRepository.class);
 
-	private static final String CONSUL_ADDRESS = "http://" + System.getenv("CONSUL") + ":8500";
-	//private static final String CONSUL_ADDRESS = "http://" + "192.168.1.2:8500";
+	//private static final String CONSUL_ADDRESS = "http://" + System.getenv("CONSUL") + ":8500";
+	
+	private static final String CONSUL_ADDRESS = "http://" + "192.168.1.2:8500";
 
 	private static final String KEY_VALUE_PATH = "v1/kv";
 
@@ -35,6 +36,7 @@ public class ConsulRepository {
 	private RestTemplateConfig restTemplateConfig;
 
 	public Optional<ConsulConfigItem> requestConsulValue(String path) {
+		
 		String consulAddress = CONSUL_ADDRESS + URL_SEPARATOR + KEY_VALUE_PATH + URL_SEPARATOR + path;
 		try {
 			ConsulConfigItem consulItem = restTemplateConfig.restTemplate().getForObject(consulAddress,

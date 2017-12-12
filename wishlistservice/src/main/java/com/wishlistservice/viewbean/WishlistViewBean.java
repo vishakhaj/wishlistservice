@@ -1,14 +1,8 @@
 package com.wishlistservice.viewbean;
 
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
-import java.util.Date;
 import java.util.List;
 
-import org.springframework.format.annotation.DateTimeFormat;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.wishlistservice.common.Privacy;
@@ -46,7 +40,7 @@ public class WishlistViewBean {
 
 	private List<Item> items;
 	
-	private boolean isAddedToWishlist;
+	//private boolean isAddedToWishlist;
 
 	public WishlistViewBean() {
 		this(false);
@@ -100,10 +94,6 @@ public class WishlistViewBean {
 		this.userId = userId;
 	}
 
-	// public void setEmptyWishlist(boolean emptyWishlist) {
-	// this.emptyWishlist = emptyWishlist;
-	// }
-
 	public String getWishlistId() {
 		return wishlistId;
 	}
@@ -128,8 +118,6 @@ public class WishlistViewBean {
 		this.description = description;
 	}
 	
-	
-
 	public LocalDateTime getCreatedAt() {
 		return createdAt;
 	}
@@ -170,13 +158,13 @@ public class WishlistViewBean {
 		this.items = items;
 	}
 	
-	public boolean isAddedToWishlist() {
-		return isAddedToWishlist;
-	}
+//	public boolean isAddedToWishlist() {
+//		return isAddedToWishlist;
+//	}
 
-	public void setAddedToWishlist(boolean isAddedToWishlist) {
-		this.isAddedToWishlist = isAddedToWishlist;
-	}
+//	public void setAddedToWishlist(boolean isAddedToWishlist) {
+//		this.isAddedToWishlist = isAddedToWishlist;
+//	}
 
 	public String getLocale() {
 		return locale;

@@ -11,7 +11,6 @@ import com.wishlistservice.domain.Wishlist;
 
 public interface CustomWishlistRepository {
 
-	//@Query("find().sort({createdAt:-1})")
 	public void cacheAllWishlists();
 
 	public void createWishlistByUserId(String client, String locale, String userId, Wishlist wishlist);

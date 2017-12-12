@@ -1,4 +1,7 @@
 package com.wishlistservice.repositoryimpl;
+/**
+ * Item Repository implements methods to fetch and cache items that are retrieved from Consul. 
+ */
 
 import java.net.URI;
 import java.net.URISyntaxException;

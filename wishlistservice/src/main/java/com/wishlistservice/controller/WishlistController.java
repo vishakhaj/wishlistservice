@@ -78,11 +78,13 @@ public class WishlistController {
 
 		wishlistService.getAllWishlistsFromCache();
 		WishlistViewBean w = wishlistService.getWishlistByUserIdAndWishlistId(userId, wishlistId);
-		WishlistResource wishlistResource = new WishlistResource();
-		wishlistResource.setItemAddedToWishlist(true);
+		//WishlistResource wishlistResource = new WishlistResource();
+		//wishlistResource.setItemAddedToWishlist(true);
+		//WishlistResource resource = wishlistResourceAssembler
+		//		.returnUriForUpdateWishlist(wishlistResource.isItemAddedToWishlist(), w);
 		WishlistResource resource = wishlistResourceAssembler
-				.returnUriForUpdateWishlist(wishlistResource.isItemAddedToWishlist(), w);
-
+				.returnUriForUpdateWishlist(w);
+		
 		return new ResponseEntity<WishlistResource>(resource, HttpStatus.OK);
 	}
 

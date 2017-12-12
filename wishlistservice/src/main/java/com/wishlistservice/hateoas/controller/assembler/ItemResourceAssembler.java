@@ -40,7 +40,7 @@ public class ItemResourceAssembler extends ResourceAssemblerSupport<Item, ItemRe
 			itemResource.add(linkTo(methodOn(WishlistController.class).updateItemToWishlist(itemResource.getItem().getClient(),
 					itemResource.getItem().getLocale(), httpSession.getAttribute("userIdSession").toString(),
 					httpSession.getAttribute("wishlistIdSession").toString(), itemResource.getItem().getItemId()))
-							.withRel("add-item-to-this-wishlist"));
+							.withRel("add_item_to_wishlist"));
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

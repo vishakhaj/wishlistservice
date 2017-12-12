@@ -1,5 +1,8 @@
 package com.wishlistservice.repositoryimpl;
 
+/**
+ * Performs add and delete operations on items in a wish-list
+ */
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Optional;

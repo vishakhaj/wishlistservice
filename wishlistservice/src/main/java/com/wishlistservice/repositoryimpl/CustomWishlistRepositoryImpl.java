@@ -1,12 +1,12 @@
 package com.wishlistservice.repositoryimpl;
+/**
+ * Custom Wish-list Repository implements the CRUD operations carried out by the end user on a wish-list.
+ * Read and Write operations are carried out on MongoDB.
+ * Data is cached using Google Guava cache.
+ */
 
 import java.text.ParseException;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -31,8 +31,6 @@ import org.springframework.stereotype.Repository;
 import com.google.common.base.Objects;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.mongodb.BasicDBObjectBuilder;
-import com.mongodb.DBObject;
 import com.mongodb.WriteResult;
 import com.wishlistservice.common.Client;
 import com.wishlistservice.common.Clients;
@@ -65,8 +63,6 @@ public class CustomWishlistRepositoryImpl implements CustomWishlistRepository {
 	 */
 	public void cacheAllWishlists() {
 		try {
-			// mongoTemplate.indexOps(Wishlist.class).ensureIndex(new
-			// Index().on("createdAt", Direction.DESC));
 			Query query = new Query();
 			query.with(new Sort(Sort.Direction.DESC, "createdAt"));
 			List<Wishlist> wishlists = mongoTemplate.find(query, Wishlist.class);
@@ -152,24 +148,6 @@ public class CustomWishlistRepositoryImpl implements CustomWishlistRepository {
 	 */
 	public void createWishlistByUserId(String client, String locale, String userId, Wishlist wishlist) {
 		
-//		ZoneId zoneId = ZoneId.of("Europe/Berlin");
-//		Instant instant = Instant.now();
-//		
-////		System.out.println("instant" + instant);
-//		
-//		ZonedDateTime zdt = instant.atZone(zoneId);
-//		System.out.println("Zone date time: " + zdt);
-//		
-////		System.out.println("zoned time zone: " + zdt);
-//		
-////		LocalDateTime ldt = LocalDateTime.now();
-////		System.out.println("local date time: " + ldt);
-////		ZonedDateTime zdt = ldt.atZone(zoneId);
-////		// ZonedDateTime zdt = ZonedDateTime.of(ldt, zoneId);
-//		
-//		Date date = Date.from(zdt.toInstant());
-//		System.out.println("date: " + date);
-//		
 		mongoTemplate.save(new Wishlist(wishlist.getName(), wishlist.getDescription(), client, locale, new Date(),
 				wishlist.getSource(), wishlist.getType(), wishlist.getPrivacy(), new Date(), userId, SortOrder.DEFAULT,
 				new ArrayList<Item>()));
@@ -221,15 +199,6 @@ public class CustomWishlistRepositoryImpl implements CustomWishlistRepository {
 				}
 			}
 		}
-		
-//		String[] wishlistArray = { wishlistId };
-//		Query findQuery = Query.query(Criteria.where("wishlistId").in(Arrays.asList(wishlistArray)));
-//		DBObject pullUpdate = BasicDBObjectBuilder.start()
-//				.add("wishlistId", BasicDBObjectBuilder.start().add("$in", wishlistArray).get()).get();
-//
-//		Update update = new Update().pull("wishlist", pullUpdate);
-//		WriteResult wishlistDeleted = mongoTemplate.updateMulti(findQuery, update, Wishlist.class);
-//		return Optional.of(wishlistDeleted);
 	}
 
 	@Override

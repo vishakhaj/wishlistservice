@@ -47,27 +47,27 @@ public class WishlistResourceAssembler extends ResourceAssemblerSupport<Wishlist
 			wishlistResource.add(linkTo(methodOn(WishlistController.class).updateWishlistByUserIdAndWishlistId(
 					wishlistResource.getWishlist().getClient(), wishlistResource.getWishlist().getLocale(),
 					wishlistResource.getWishlist().getUserId(), wishlistResource.getWishlist().getWishlistId(),
-					new Wishlist())).withRel("update-this-wishlist"));
+					new Wishlist())).withRel("update_wishlist"));
 			// delete this wishlist
 			wishlistResource.add(linkTo(methodOn(WishlistController.class).deleteWishlistByUserIdAndWishlistId(
 					wishlistResource.getWishlist().getClient(), wishlistResource.getWishlist().getLocale(),
 					wishlistResource.getWishlist().getUserId(), wishlistResource.getWishlist().getWishlistId()))
-							.withRel("delete-this-wishlist"));
+							.withRel("delete_wishlist"));
 			// view items
-			wishlistResource.add(linkTo(methodOn(ItemController.class).getAllItems()).withRel("view-items"));
+			wishlistResource.add(linkTo(methodOn(ItemController.class).getAllItems()).withRel("view_items"));
 
 			// delete an item from wishlist
 			for (Item item : wishlistResource.getWishlist().getItems()) {
 				wishlistResource.add(linkTo(methodOn(WishlistController.class).deleteItemFromWishlist(
 						wishlistResource.getWishlist().getClient(), wishlistResource.getWishlist().getLocale(),
 						wishlistResource.getWishlist().getUserId(), wishlistResource.getWishlist().getWishlistId(),
-						item.getItemId())).withRel("delete-this-item"));
+						item.getItemId())).withRel("delete_item"));
 			}
 
 			//view all wishlist
 			wishlistResource.add(linkTo(methodOn(WishlistController.class).getAllWishlistsByUserId(httpSession.getAttribute("clientSession").toString(),
 					httpSession.getAttribute("localeSession").toString(),
-					httpSession.getAttribute("userIdSession").toString())).withRel("view-all-wishlists"));
+					httpSession.getAttribute("userIdSession").toString())).withRel("view_all_wishlists"));
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -95,11 +95,11 @@ public class WishlistResourceAssembler extends ResourceAssemblerSupport<Wishlist
 			// create a wishlist
 			wishlistResource.add(linkTo(methodOn(WishlistController.class).createWishlistByUserId(
 					wishlistResource.getWishlist().getClient(), wishlistResource.getWishlist().getLocale(),
-					wishlistResource.getWishlist().getUserId(), new Wishlist())).withRel("add-wishlist"));
+					wishlistResource.getWishlist().getUserId(), new Wishlist())).withRel("add_wishlist"));
 			// delete all wishlists
 			wishlistResource.add(linkTo(methodOn(WishlistController.class).deleteAllWishlistsByUserId(
 					wishlistResource.getWishlist().getClient(), wishlistResource.getWishlist().getLocale(),
-					wishlistResource.getWishlist().getUserId())).withRel("delete-all-wishlists"));
+					wishlistResource.getWishlist().getUserId())).withRel("delete_all_wishlists"));
 		}
 		return wishlistResources;
 	}
@@ -136,12 +136,12 @@ public class WishlistResourceAssembler extends ResourceAssemblerSupport<Wishlist
 
 	
 	// return url after updating an existing wishlist
-	public WishlistResource returnUriForUpdateWishlist(boolean isUpdated, WishlistViewBean viewBean)
+	public WishlistResource returnUriForUpdateWishlist(WishlistViewBean viewBean)
 			throws IOException, URISyntaxException, ParseException {
-
+		//boolean isUpdated, 
 		WishlistResource wishlistResource = new WishlistResource();
 
-		if (isUpdated) {
+//		if (isUpdated) {
 			// return get all wishlists of a user
 			wishlistResource.add(linkTo(methodOn(WishlistController.class).getAllWishlistsByUserId(viewBean.getClient(),
 					viewBean.getLocale(), viewBean.getUserId())).withSelfRel());
@@ -152,9 +152,9 @@ public class WishlistResourceAssembler extends ResourceAssemblerSupport<Wishlist
 							viewBean.getLocale(), viewBean.getUserId(), viewBean.getWishlistId())).withSelfRel());
 			System.out.println("wishlist id session: " + httpSession.getAttribute("wishlistIdSession").toString());
 			return wishlistResource;
-		}
+		//}
 
-		return null;
+//		return null;
 	}
 
 	// return url after items are added or deleted from a wishlist of a user

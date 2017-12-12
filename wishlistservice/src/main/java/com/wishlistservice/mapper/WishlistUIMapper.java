@@ -1,12 +1,9 @@
 package com.wishlistservice.mapper;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
@@ -32,11 +29,6 @@ public class WishlistUIMapper {
 		}
 		
 		return list;
-//		return wishlists.stream()
-//				.map(wishlist -> new WishlistViewBean(wishlist.getWishlistId(), wishlist.getName(), 
-//						wishlist.getDescription(), zonedDateTime, wishlist.getClient(), wishlist.getLocale(),
-//						wishlist.getSource(), wishlist.getType(), wishlist.getPrivacy(), wishlist.getModifiedOn(), wishlist.getUserId(), wishlist.getItems()))
-//				.collect(Collectors.toList());
 	}
 	
 	public WishlistViewBean createUIViewBean(Wishlist wishlist){

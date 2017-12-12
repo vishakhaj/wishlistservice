@@ -8,7 +8,7 @@ public class WishlistResource extends ResourceSupport {
 
 	private WishlistViewBean wishlist;
 
-	private boolean itemAddedToWishlist;
+	//private boolean itemAddedToWishlist;
 	
 	public WishlistResource() {
 	}
@@ -25,12 +25,12 @@ public class WishlistResource extends ResourceSupport {
 		this.wishlist = wishlist;
 	}
 
-	public boolean isItemAddedToWishlist() {
-		return itemAddedToWishlist;
-	}
-
-	public void setItemAddedToWishlist(boolean itemAddedToWishlist) {
-		this.itemAddedToWishlist = itemAddedToWishlist;
-	}
+//	public boolean isItemAddedToWishlist() {
+//		return itemAddedToWishlist;
+//	}
+//
+//	public void setItemAddedToWishlist(boolean itemAddedToWishlist) {
+//		this.itemAddedToWishlist = itemAddedToWishlist;
+//	}
 
 }
